@@ -39,7 +39,6 @@ export function QuestionCard({
           </h2>
         </div>
       </div>
-
       {/* Answers */}
       <div className="space-y-3">
         <div className="text-sm font-medium text-muted-foreground px-2">
