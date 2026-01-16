@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/types/game";
+import Link from "next/link";
 
 interface GameSummaryProps {
   followers: number;
@@ -185,7 +186,13 @@ export function GameSummary({
       </div>
 
       {/* Restart Button */}
-      <div className="text-center pt-4">
+      <div className="flex justify-center gap-4 pt-4">
+        <Link
+          href="/leaderboard"
+          className="px-8 py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity"
+        >
+          🏆 Xem bảng xếp hạng
+        </Link>
         <button
           onClick={onRestart}
           className="px-8 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity"

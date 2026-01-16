@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { GameState, GameAction, Answer, Badge } from "@/types/game";
 import { QUESTIONS, BADGES } from "@/data/gameData";
+import { saveGameResult } from "@/lib/supabase";
 
 const INITIAL_STATE: GameState = {
   followers: 100,
@@ -26,6 +27,8 @@ export function useGameLogic() {
   const [recentFollowersGains, setRecentFollowersGains] = useState<number[]>(
     []
   );
+  const [playerName, setPlayerName] = useState<string>("");
+  const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
 
   // Get available questions
   const availableQuestions = QUESTIONS.filter((q) =>
@@ -290,6 +293,22 @@ export function useGameLogic() {
 
       if (remainingQuestions.length === 0) {
         setGameCompleted(true);
+        // Save to leaderboard when game completes
+        if (playerName) {
+          const durationSeconds = Math.floor((Date.now() - gameStartTime) / 1000);
+          saveGameResult({
+            player_name: playerName,
+            followers: newState.followers,
+            credibility: newState.credibility,
+            badges_count: newState.badges.size,
+            completed_at: new Date().toISOString(),
+            duration_seconds: durationSeconds,
+            game_data: {
+              history: newState.history,
+              badges: Array.from(newState.badges),
+            },
+          }).catch(err => console.error('Failed to save game result:', err));
+        }
       } else {
         setCurrentQuestionIndex(0);
       }
@@ -313,6 +332,7 @@ export function useGameLogic() {
     setGameOver(false);
     setGameOverReason("");
     setTagCounts(new Map());
+    setGameStartTime(Date.now()); // Reset start time
     setStreakCounts(new Map());
     setRecentFollowersGains([]);
   }, []);
@@ -375,5 +395,7 @@ export function useGameLogic() {
     getGameSummary,
     getBadgeProgress,
     allBadges: BADGES,
+    playerName,
+    setPlayerName,
   };
 }

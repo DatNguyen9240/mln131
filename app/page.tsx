@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGameLogic } from "@/hooks/useGameLogic";
 import { QuestionCard } from "@/components/QuestionCard";
 import { GameSummary } from "@/components/GameSummary";
@@ -8,6 +8,8 @@ import { GameOver } from "@/components/GameOver";
 import { GameLayout } from "@/components/GameLayout";
 import { GameHeader } from "@/components/GameHeader";
 import { CompactBadgesDisplay } from "@/components/CompactBadgesDisplay";
+import { NameInput } from "@/components/NameInput";
+import Link from "next/link";
 
 export default function Home() {
   const {
@@ -22,9 +24,25 @@ export default function Home() {
     getGameSummary,
     getBadgeProgress,
     allBadges,
+    setPlayerName,
+    playerName,
   } = useGameLogic();
 
   const [showIntro, setShowIntro] = useState(true);
+  const [hasEnteredName, setHasEnteredName] = useState(false);
+
+  // Show name input first
+  if (!hasEnteredName) {
+    return (
+      <NameInput 
+        onSubmit={(name) => {
+          setPlayerName(name);
+          localStorage.setItem('playerName', name);
+          setHasEnteredName(true);
+        }} 
+      />
+    );
+  }
 
   if (showIntro) {
     return (
@@ -119,13 +137,19 @@ export default function Home() {
           </div>
 
           {/* Start Button */}
-          <div className="text-center py-4">
+          <div className="flex flex-col items-center gap-4 py-4">
             <button
               onClick={() => setShowIntro(false)}
               className="px-16 py-5 bg-primary text-primary-foreground rounded-xl text-xl font-bold hover:opacity-90 hover:scale-105 transition-all shadow-xl"
             >
               🎮 Bắt đầu chơi
             </button>
+            <Link
+              href="/leaderboard"
+              className="px-8 py-3 bg-secondary text-secondary-foreground rounded-lg font-semibold hover:opacity-90 transition-opacity"
+            >
+              🏆 Xem bảng xếp hạng
+            </Link>
           </div>
         </div>
       </main>

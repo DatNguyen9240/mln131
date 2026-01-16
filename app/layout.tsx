@@ -12,25 +12,25 @@ const beVietnamPro = Be_Vietnam_Pro({
 })
 
 export const metadata: Metadata = {
-  title: "Hangman - Học Chính Trị",
-  description: "Trò chơi đoán chữ giáo dục về Dân chủ XHCN và Nhà nước pháp quyền XHCN Việt Nam",
+  title: "Tập làm người xấu - Mạng xã hội và Tin giả",
+  description: "Trò chơi giáo dục về lan truyền tin giả và thao túng thông tin trên mạng xã hội tại Việt Nam.",
   generator: "v0.app",
   icons: {
     icon: [
       {
-        url: "/icon-light-32x32.png",
+        url: "/logo.webp",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/icon-dark-32x32.png",
+        url: "/logo.webp",
         media: "(prefers-color-scheme: dark)",
       },
       {
-        url: "/icon.svg",
-        type: "image/svg+xml",
+        url: "/logo.webp",
+        type: "image/webp",
       },
     ],
-    apple: "/apple-icon.png",
+    apple: "/logo.webp",
   },
 }
 
