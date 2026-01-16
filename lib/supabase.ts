@@ -45,12 +45,10 @@ export interface LeaderboardEntry {
 // Save game result to leaderboard (via secure API endpoint)
 export async function saveGameResult(entry: LeaderboardEntry) {
   if (!isSupabaseConfigured()) {
-    console.warn('Supabase is not configured. Skipping save.');
     return { success: false, error: 'Supabase not configured' };
   }
 
   try {
-    // Call secure API endpoint instead of direct Supabase access
     const response = await fetch('/api/submit-score', {
       method: 'POST',
       headers: {
@@ -62,7 +60,6 @@ export async function saveGameResult(entry: LeaderboardEntry) {
     const result = await response.json();
 
     if (!response.ok) {
-      console.error('Error submitting score:', result.error);
       return { success: false, error: result.error };
     }
 

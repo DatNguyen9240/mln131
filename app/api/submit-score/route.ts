@@ -74,15 +74,7 @@ export async function POST(request: NextRequest) {
     
     // If player exists, compare scores
     if (existingData && !fetchError) {
-      const isBetterScore = 
-        data.badges_count > existingData.badges_count || 
-        (data.badges_count === existingData.badges_count && data.followers > existingData.followers) ||
-        (data.badges_count === existingData.badges_count && 
-         data.followers === existingData.followers && 
-         data.duration_seconds < existingData.duration_seconds);
-      
-      if (isBetterScore) {
-        const { data: updatedData, error } = await supabaseAdmin
+      const { data: updatedData, error } = await supabaseAdmin
           .from('leaderboard')
           .update({
             followers: data.followers,
@@ -103,14 +95,6 @@ export async function POST(request: NextRequest) {
         }
         
         return NextResponse.json({ success: true, data: updatedData, updated: true });
-      } else {
-        return NextResponse.json({ 
-          success: true, 
-          data: existingData, 
-          updated: false,
-          message: 'Score not better than existing record' 
-        });
-      }
     }
     
     // Insert new record

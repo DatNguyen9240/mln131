@@ -22,7 +22,13 @@ export default function LeaderboardPage() {
       try {
         const result = await getLeaderboard(100);
         if (result.success && result.data) {
-          setLeaderboard(result.data);
+          // Filter out invalid entries
+          const validData = result.data.filter(entry => 
+            entry.player_name && 
+            entry.followers !== undefined && 
+            entry.credibility !== undefined
+          );
+          setLeaderboard(validData);
         } else {
           setError("Không thể tải bảng xếp hạng");
         }
@@ -33,6 +39,7 @@ export default function LeaderboardPage() {
       }
     }
 
+    // Initial fetch
     fetchLeaderboard();
 
     // Set up realtime subscription for automatic updates
@@ -40,6 +47,11 @@ export default function LeaderboardPage() {
       const { subscribeToLeaderboard } = require("@/lib/supabase");
       const unsubscribe = subscribeToLeaderboard((newData: LeaderboardEntry) => {
         setLeaderboard((prev) => {
+          // Ignore invalid/incomplete data
+          if (!newData.player_name || newData.followers === undefined || newData.credibility === undefined) {
+            return prev; // Keep existing data
+          }
+
           // Check if player already exists
           const existingIndex = prev.findIndex(
             (entry) => entry.player_name === newData.player_name
@@ -54,6 +66,13 @@ export default function LeaderboardPage() {
             // Add new player
             updated = [...prev, newData];
           }
+
+          // Filter out invalid entries
+          updated = updated.filter(entry => 
+            entry.player_name && 
+            entry.followers !== undefined && 
+            entry.credibility !== undefined
+          );
 
           // Re-sort by badges desc, then followers desc, then credibility desc, then duration asc (faster = better)
           return updated.sort((a, b) => {
