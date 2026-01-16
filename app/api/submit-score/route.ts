@@ -31,15 +31,9 @@ function validateGameSubmission(data: GameSubmission): { valid: boolean; error?:
     return { valid: false, error: 'Invalid player name' };
   }
   
-  // Validate game history exists
+  // Validate game history exists (but don't enforce 16 questions - game can end early)
   if (!data.game_data?.history || !Array.isArray(data.game_data.history)) {
     return { valid: false, error: 'Invalid game history' };
-  }
-  
-  // Check if answered questions match the score
-  const answeredCount = data.game_data.history.length;
-  if (answeredCount !== 16) {
-    return { valid: false, error: 'Must complete all 16 questions' };
   }
   
   return { valid: true };
