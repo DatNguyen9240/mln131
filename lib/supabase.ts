@@ -42,75 +42,35 @@ export interface LeaderboardEntry {
   game_data?: any;
 }
 
-// Save game result to leaderboard
+// Save game result to leaderboard (via secure API endpoint)
 export async function saveGameResult(entry: LeaderboardEntry) {
   if (!isSupabaseConfigured()) {
     console.warn('Supabase is not configured. Skipping save.');
     return { success: false, error: 'Supabase not configured' };
   }
 
-  const supabase = getSupabase();
-  
-  // Check if player already exists
-  const { data: existingData, error: fetchError } = await supabase
-    .from('leaderboard')
-    .select('*')
-    .eq('player_name', entry.player_name)
-    .single();
+  try {
+    // Call secure API endpoint instead of direct Supabase access
+    const response = await fetch('/api/submit-score', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(entry),
+    });
 
-  // If player exists, compare scores and update if new score is better
-  if (existingData && !fetchError) {
-    // Only update if new score is better (more badges, or same badges but more followers, or same but faster time)
-    const isBetterScore = entry.badges_count > existingData.badges_count || 
-                          (entry.badges_count === existingData.badges_count && entry.followers > existingData.followers) ||
-                          (entry.badges_count === existingData.badges_count && entry.followers === existingData.followers && entry.duration_seconds < existingData.duration_seconds);
-    
-    if (isBetterScore) {
-      const { data, error } = await supabase
-        .from('leaderboard')
-        .update({
-          followers: entry.followers,
-          credibility: entry.credibility,
-          badges_count: entry.badges_count,
-          completed_at: entry.completed_at,
-          duration_seconds: entry.duration_seconds,
-          game_data: entry.game_data
-        })
-        .eq('player_name', entry.player_name)
-        .select();
+    const result = await response.json();
 
-      if (error) {
-        console.error('Error updating game result:', error);
-        return { success: false, error };
-      }
-
-      return { success: true, data, updated: true };
-    } else {
-      // Score not better, don't update
-      return { success: true, data: existingData, updated: false, message: 'Score not better than existing record' };
+    if (!response.ok) {
+      console.error('Error submitting score:', result.error);
+      return { success: false, error: result.error };
     }
-  }
 
-  // Player doesn't exist, insert new record
-  const { data, error } = await supabase
-    .from('leaderboard')
-    .insert([{
-      player_name: entry.player_name,
-      followers: entry.followers,
-      credibility: entry.credibility,
-      duration_seconds: entry.duration_seconds,
-      badges_count: entry.badges_count,
-      completed_at: entry.completed_at,
-      game_data: entry.game_data
-    }])
-    .select();
-
-  if (error) {
-    console.error('Error saving game result:', error);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error('Error submitting score:', error);
     return { success: false, error };
   }
-
-  return { success: true, data };
 }
 
 // Get top leaderboard entries

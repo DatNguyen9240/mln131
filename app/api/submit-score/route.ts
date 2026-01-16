@@ -12,22 +12,20 @@ interface GameSubmission {
 
 // Validate game data to prevent cheating
 function validateGameSubmission(data: GameSubmission): { valid: boolean; error?: string } {
-  // Check basic bounds
+  // Check basic bounds - only prevent negative values
   if (data.badges_count < 0 || data.badges_count > 10) {
     return { valid: false, error: 'Invalid badges count' };
   }
   
-  if (data.followers < 0 || data.followers > 100000) {
+  if (data.followers < 0) {
     return { valid: false, error: 'Invalid followers count' };
   }
   
-  if (data.credibility < 0 || data.credibility > 200) {
+  if (data.credibility < 0) {
     return { valid: false, error: 'Invalid credibility' };
   }
   
-  if (data.duration_seconds < 30 || data.duration_seconds > 7200) {
-    return { valid: false, error: 'Invalid duration (too fast or too slow)' };
-  }
+  // Duration validation removed - allow any completion time
   
   if (!data.player_name || data.player_name.length < 2 || data.player_name.length > 30) {
     return { valid: false, error: 'Invalid player name' };
