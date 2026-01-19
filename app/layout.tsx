@@ -12,7 +12,7 @@ const beVietnamPro = Be_Vietnam_Pro({
 })
 
 export const metadata: Metadata = {
-  title: "Tập làm người xấu - Mạng xã hội và Tin giả",
+  title: "Thử làm người xấu - Mạng xã hội và Tin giả",
   description: "Trò chơi giáo dục về lan truyền tin giả và thao túng thông tin trên mạng xã hội tại Việt Nam.",
   generator: "v0.app",
   icons: {
